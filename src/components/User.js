@@ -4,6 +4,8 @@ import { connect }      from 'react-redux';
 import {
   getMyInfo,
   setTokens,
+  getNowPlaying,
+  getArtist
 }   from '../actions/actions';
 
 const spotifyApi = new Spotify();
@@ -17,10 +19,6 @@ class User extends Component {
   constructor() {
     super();
     console.log(this.props)
-    this.state = {
-      loggedIn: false, //accessToken ? true : false,
-      nowPlaying: { name: 'Not Checked', albumArt: '' }
-    }
   }
 
   /** When we mount, get the tokens from react-router and initiate loading the info */
@@ -30,31 +28,15 @@ class User extends Component {
     const {accessToken, refreshToken} = params;
     dispatch(setTokens({accessToken, refreshToken}));
     dispatch(getMyInfo());
-
-    if (accessToken) {
-      this.setState({loggedIn: true})
-      spotifyApi.setAccessToken(accessToken);
-    }
-  }
-
-  getNowPlaying() {
-    spotifyApi.getMyCurrentPlaybackState()
-      .then((response) => {
-        console.log(response.item)
-        this.setState({
-          nowPlaying: { 
-            name: response.item.name,
-            artist: response.item.artists[0].name,
-            albumArt: response.item.album.images[0].url
-          }
-        });
-      }, (error) => console.log(error))
+    dispatch(getArtist());
+    //dispatch(getNowPlaying());
   }
 
   /** Render the user's info */
   render() {
-    const { accessToken, refreshToken, user } = this.props;
+    const { accessToken, refreshToken, user, currentTrack } = this.props;
     const { loading, display_name, images, id, email, external_urls, href, country, product } = user;
+    const { name, artist, albumArt } = currentTrack;
     const imageUrl = images[0] ? images[0].url : "";
     // if we're still loading, indicate such
     if (loading) {
@@ -76,18 +58,17 @@ class User extends Component {
             <li><span>Product</span><span>{product}</span></li>
           </ul>
         </div>
-
         <div>
-          Now Playing: { this.state.nowPlaying.name + ' by ' + this.state.nowPlaying.artist }
+          Now Playing: { name + ' by ' + artist }
         </div>
         <div>
-          <img src={this.state.nowPlaying.albumArt} style={{ height: 150 }}/>
+          <img src={albumArt} style={{ height: 150 }}/>
         </div>
-        { this.state.loggedIn &&
+        {/* { this.state.loggedIn &&
             <button onClick={() => this.getNowPlaying()}>
               Check Now Playing
             </button>
-        }
+        } */}
       </div>
     );
   }

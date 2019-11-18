@@ -1,5 +1,5 @@
 import {
-  SPOTIFY_TOKENS, SPOTIFY_ME_BEGIN, SPOTIFY_ME_SUCCESS, SPOTIFY_ME_FAILURE
+  SPOTIFY_TOKENS, SPOTIFY_ME_BEGIN, SPOTIFY_ME_SUCCESS, SPOTIFY_ME_FAILURE, SPOTIFY_CURRENT_TRACK
 } from '../actions/actions';
 
 /** The initial state; no tokens and no user info */
@@ -19,11 +19,16 @@ const initialState = {
     product: null,
     type: null,
     uri: null,
+  },
+  currentTrack: {
+    name: null,
+    artist: null,
+    albumArt: null
   }
 };
 
 /**
- * Our reducer
+ * Reducer
  */
 export default function reduce(state = initialState, action) {
   switch (action.type) {
@@ -42,6 +47,11 @@ export default function reduce(state = initialState, action) {
   case SPOTIFY_ME_SUCCESS:
     return Object.assign({}, state, {
       user: Object.assign({}, state.user, action.data, {loading: false})
+    });
+
+  case SPOTIFY_CURRENT_TRACK:
+    return Object.assign({}, state, {
+      currentTrack: Object.assign({}, state.currentTrack, action.data)
     });
 
   // currently no failure state :(

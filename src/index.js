@@ -12,8 +12,6 @@ import Login   from './components/Login';
 import User    from './components/User';
 import Error   from './components/Error';
 
-// load our css. there probably is a better way to do this
-// but for now this is our move
 require('./style.less');
 
 // Sync dispatched route actions to the history
@@ -23,6 +21,8 @@ const createStoreWithMiddleware = applyMiddleware(
   reduxRouterMiddleware
 ) (createStore)
 const store = createStoreWithMiddleware(reducer)
+
+console.log(store.getState())
 
 class Root extends Component {
   render() {
