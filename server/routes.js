@@ -21,7 +21,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:3000/callback';
 const STATE_KEY = 'spotify_auth_state';
 // your application requests authorization
-const scopes = ['user-read-private', 'user-read-email', 'user-read-playback-state'];
+const scopes = ['user-read-private', 'user-read-email', 'user-read-playback-state', 'user-top-read'];
 
 // configure spotify
 const spotifyApi = new Spotify({
@@ -70,6 +70,16 @@ router.get('/callback', (req, res) => {
       // use the access token to access the Spotify Web API
       spotifyApi.getMe().then(({ body }) => {
         console.log(body);
+      });
+
+      // spotifyApi.getMyTopTracks().then(({ body }) => {
+      //   console.log(body);
+      // });
+
+      spotifyApi.getMyCurrentPlaybackState().then(({ body }) => {
+        console.log(body.item);
+      }, (error) => {
+        console.log(error) 
       });
 
       // we can also pass the token to the browser to make requests from there

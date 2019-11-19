@@ -7,6 +7,11 @@ const path         = require('path');
 const logger       = require('morgan');
 const routes       = require('./routes');
 
+const mongoose = require('mongoose')
+
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/hw5-new')
+
+
 const port = process.env.PORT || 3000;
 
 // configure the express server

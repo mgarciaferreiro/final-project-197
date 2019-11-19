@@ -11,6 +11,7 @@ import App     from './components/App';
 import Login   from './components/Login';
 import User    from './components/User';
 import Error   from './components/Error';
+import SongDisplay   from './components/SongDisplay';
 
 require('./style.less');
 
@@ -21,8 +22,6 @@ const createStoreWithMiddleware = applyMiddleware(
   reduxRouterMiddleware
 ) (createStore)
 const store = createStoreWithMiddleware(reducer)
-
-console.log(store.getState())
 
 class Root extends Component {
   render() {

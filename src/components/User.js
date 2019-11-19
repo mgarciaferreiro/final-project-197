@@ -1,14 +1,11 @@
-import Spotify from 'spotify-web-api-js';
 import React, { Component } from 'react';
 import { connect }      from 'react-redux';
 import {
   getMyInfo,
   setTokens,
   getNowPlaying,
-  getArtist
+  fetchSongId
 }   from '../actions/actions';
-
-const spotifyApi = new Spotify();
 
 /**
  * Our user page
@@ -18,7 +15,6 @@ class User extends Component {
 
   constructor() {
     super();
-    console.log(this.props)
   }
 
   /** When we mount, get the tokens from react-router and initiate loading the info */
@@ -28,7 +24,6 @@ class User extends Component {
     const {accessToken, refreshToken} = params;
     dispatch(setTokens({accessToken, refreshToken}));
     dispatch(getMyInfo());
-    dispatch(getArtist());
     //dispatch(getNowPlaying());
   }
 
@@ -58,17 +53,6 @@ class User extends Component {
             <li><span>Product</span><span>{product}</span></li>
           </ul>
         </div>
-        <div>
-          Now Playing: { name + ' by ' + artist }
-        </div>
-        <div>
-          <img src={albumArt} style={{ height: 150 }}/>
-        </div>
-        {/* { this.state.loggedIn &&
-            <button onClick={() => this.getNowPlaying()}>
-              Check Now Playing
-            </button>
-        } */}
       </div>
     );
   }

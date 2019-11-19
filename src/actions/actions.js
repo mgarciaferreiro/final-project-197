@@ -7,6 +7,8 @@ export const SPOTIFY_ME_BEGIN = 'SPOTIFY_ME_BEGIN';
 export const SPOTIFY_ME_SUCCESS = 'SPOTIFY_ME_SUCCESS';
 export const SPOTIFY_ME_FAILURE = 'SPOTIFY_ME_FAILURE';
 export const SPOTIFY_CURRENT_TRACK = 'SPOTIFY_CURRENT_TRACK';
+export const SPOTIFY_TOP_TRACKS = 'SPOTIFY_TOP_TRACKS';
+export const LYRICS_RECEIVED = 'LYRICS_RECEIVED';
 
 const MUSIXMATCH_API_KEY = process.env.MUSIXMATCH_API_KEY;
 
@@ -30,35 +32,33 @@ export function getMyInfo() {
   };
 }
 
+export function getTopSongs() {
+  spotifyApi.getMyTopTracks().then(data => {
+    console.log(body);
+    dispatch({ type: SPOTIFY_TOP_TRACKS, data: data });
+  });
+}
+
 export function getNowPlaying() {
   return dispatch => {
     spotifyApi.getMyCurrentPlaybackState().then(response => {
-      console.log(response)
+      console.log("now playing: " + response.item)
       dispatch({ type: SPOTIFY_CURRENT_TRACK, data: { 
                 name: response.item.name,
                 artist: response.item.artists[0].name,
                 albumArt: response.item.album.images[0].url
               } });
     }).catch(e => {
-      dispatch({ type: SPOTIFY_ME_FAILURE, error: e });
+      console.log(e);
     });
   };
 }
 
-export function getArtist() {
-  return dispatch => {
-    spotifyApi.getArtist('2hazSY4Ef3aB9ATXW7F5w3').then(response => {console.log(response)
-    }).catch(e => {
-      dispatch({ type: SPOTIFY_ME_FAILURE, error: e });
-    });
-  };
-}
-  export function fetchSongId(title) {
+export function fetchSongId(title) {
     return dispatch => {
-      const localSongId = v4();
       title = title.replace(' ', '_');
       return fetch('http://api.musixmatch.com/ws/1.1/track.search?&q_track=' + title + 
-      '&page_size=1&s_track_rating=desc&apikey=' + MUSIXMATCH_API_KEY)
+      '&page_size=1&s_track_rating=desc&apikey=' + MUSIXMATCH_API_KEY, { mode: 'no-cors' })
       .then(
         response => response.json(),
         error => console.log('An error occurred.', error)
@@ -67,40 +67,29 @@ export function getArtist() {
           const musicMatchId = json.message.body.track_list[0].track.track_id;
           const artist = json.message.body.track_list[0].track.artist_name;
           const title = json.message.body.track_list[0].track.track_name;
-          fetchLyrics(title, artist, musicMatchId, localSongId, dispatch);
+          console.log ("song id: " + musicMatchId)
+          console.log ("song title: " + title)
+          fetchLyrics(musicMatchId, dispatch);
         } else {
           console.log('We couldn\'t locate a song under that ID!');
         }
       });
     };
-  }
+}
 
-  export function fetchLyrics(title, artist, musicMatchId, localSongId, dispatch) {
+export function fetchLyrics(musicMatchId, dispatch) {
     return fetch('http://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=' + musicMatchId + 
-    '&apikey=' + MUSIXMATCH_API_KEY).then(
+    '&apikey=' + MUSIXMATCH_API_KEY, { mode: 'no-cors' }).then(
       response => response.json(),
       error => console.log('An error occurred.', error)
     ).then(function(json) {
       if (json.message.body.lyrics) {
         let lyrics = json.message.body.lyrics.lyrics_body;
         lyrics = lyrics.replace('"', '');
-        const songArray = lyrics.split(/\n/g).filter(entry => entry!="");
-        dispatch(receiveSong(title, artist, localSongId, songArray));
+        console.log ("lyrics: " + lyrics)
+        dispatch({ type: LYRICS_RECEIVED, data: lyrics });
       } else {
         console.log('We couldn\'t locate lyrics for this song!');
       }
     });
-  }
-
-  
-  // spotifyApi.getMyCurrentPlaybackState()
-  //   .then((response) => {
-  //     console.log(response.item)
-  //     this.setState({
-  //       nowPlaying: { 
-  //         name: response.item.name,
-  //         artist: response.item.artists[0].name,
-  //         albumArt: response.item.album.images[0].url
-  //       }
-  //     });
-  //   }, (error) => console.log(error))
+}
