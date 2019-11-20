@@ -1,3 +1,4 @@
+import axios from 'axios'
 import Spotify from 'spotify-web-api-js';
 const spotifyApi = new Spotify();
 
@@ -42,23 +43,67 @@ export function getTopSongs() {
 export function getNowPlaying() {
   return dispatch => {
     spotifyApi.getMyCurrentPlaybackState().then(response => {
-      console.log("now playing: " + response.item)
+      const name = response.item.name
+      const artist = response.item.artists[0].name
+      console.log("now playing: " + name)
       dispatch({ type: SPOTIFY_CURRENT_TRACK, data: { 
-                name: response.item.name,
-                artist: response.item.artists[0].name,
+                name: name,
+                artist: artist,
                 albumArt: response.item.album.images[0].url
               } });
+      dispatch(getSongId(name, artist));
     }).catch(e => {
       console.log(e);
     });
   };
 }
 
-export function fetchSongId(title) {
+export function getSongId(title, artist) {
+  return dispatch => {
+    title = title.replace(' ', '_');
+    artist = artist.replace(' ', '_');
+    const url = `
+    https://cors-anywhere.herokuapp.com/http://api.musixmatch.com/ws/1.1/track.search?q_track=${title}?q_artist=${artist}
+    &page_size=10&page=1&s_track_rating=desc&apikey=${MUSIXMATCH_API_KEY}`
+    axios.get(url).then( response => {
+      console.log(response)
+      const track_id = response.data.message.body.track_list[0].track.track_id
+      console.log(track_id)
+      getLyrics(track_id, dispatch)
+    }
+    )
+  }
+}
+
+export function getLyrics(songId, dispatch) {
+  return axios
+    .get(`https://cors-anywhere.herokuapp.com/https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=${songId}
+        &apikey=${MUSIXMATCH_API_KEY}`)
+    .then (res => {
+        dispatch({ type: LYRICS_RECEIVED, data: res.data.message.body.lyrics });
+        // return axios
+        // .get(
+        //     `https://cors-anywhere.herokuapp.com/https://api.musixmatch.com/ws/1.1/track.get?track_id=
+        //     ${this.props.match.params.id}
+        //     &apikey=${MUSIXMATCH_API_KEY}`)
+        // .then(res => {
+        //     this.setState({
+        //         track: res.data.message.body.track
+        //     })
+        //     //console.log(this.state.track)
+        // })
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
+
+export function fetchSongId(title, artist) {
     return dispatch => {
       title = title.replace(' ', '_');
-      return fetch('http://api.musixmatch.com/ws/1.1/track.search?&q_track=' + title + 
-      '&page_size=1&s_track_rating=desc&apikey=' + MUSIXMATCH_API_KEY, { mode: 'no-cors' })
+      artist = artist.replace(' ', '_');
+      return fetch('http://api.musixmatch.com/ws/1.1/track.search?&q_track=' + title + '&q_artist=' + artist
+      + '&page_size=1&s_track_rating=desc&apikey=' + MUSIXMATCH_API_KEY)
       .then(
         response => response.json(),
         error => console.log('An error occurred.', error)
@@ -79,7 +124,7 @@ export function fetchSongId(title) {
 
 export function fetchLyrics(musicMatchId, dispatch) {
     return fetch('http://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=' + musicMatchId + 
-    '&apikey=' + MUSIXMATCH_API_KEY, { mode: 'no-cors' }).then(
+    '&apikey=' + MUSIXMATCH_API_KEY).then(
       response => response.json(),
       error => console.log('An error occurred.', error)
     ).then(function(json) {

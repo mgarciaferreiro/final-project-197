@@ -24,14 +24,14 @@ class User extends Component {
     const {accessToken, refreshToken} = params;
     dispatch(setTokens({accessToken, refreshToken}));
     dispatch(getMyInfo());
-    //dispatch(getNowPlaying());
+    dispatch(getNowPlaying());
   }
 
   /** Render the user's info */
   render() {
     const { accessToken, refreshToken, user, currentTrack } = this.props;
     const { loading, display_name, images, id, email, external_urls, href, country, product } = user;
-    const { name, artist, albumArt } = currentTrack;
+    const { name, artist, albumArt, lyrics } = currentTrack;
     const imageUrl = images[0] ? images[0].url : "";
     // if we're still loading, indicate such
     if (loading) {
@@ -48,11 +48,17 @@ class User extends Component {
             <li><span>Email</span><span>{email}</span></li>
             <li><span>Spotify URI</span><span><a href={external_urls.spotify}>{external_urls.spotify}</a></span></li>
             <li><span>Link</span><span><a href={href}>{href}</a></span></li>
-            <li><span>Profile Image</span><span><a href={imageUrl}>{imageUrl}</a></span></li>
             <li><span>Country</span><span>{country}</span></li>
             <li><span>Product</span><span>{product}</span></li>
           </ul>
         </div>
+        <div>
+          Now Playing: { name + ' by ' + artist }
+        </div>
+        <div>
+          <img src={albumArt} style={{ height: 150 }}/>
+        </div>
+        <p>{lyrics}</p>
       </div>
     );
   }
