@@ -1,12 +1,14 @@
-'use strict';
+'use strict'
 
-const Spotify = require('spotify-web-api-node');
-const querystring = require('querystring');
-const express = require('express');
-const router = new express.Router();
+const Spotify = require('spotify-web-api-node')
+const querystring = require('querystring')
+const express = require('express')
+const router = new express.Router()
 
-const dotenv = require('dotenv');
+const dotenv = require('dotenv')
 const axios = require('axios')
+const db = require('../db/dbconnect')
+const dbapi = require('../db/api')
 
 // get global variables from .env file
 const result = dotenv.config()
@@ -17,19 +19,19 @@ if (result.error) {
 }
 
 const {CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, MUSIXMATCH_API_KEY} = process.env
-const STATE_KEY = 'spotify_auth_state';
+const STATE_KEY = 'spotify_auth_state'
 // your application requests authorization
-const scopes = ['user-read-private', 'user-read-email', 'user-read-playback-state', 'user-top-read'];
+const scopes = ['user-read-private', 'user-read-email', 'user-read-playback-state', 'user-top-read']
 
 // configure spotify
 const spotifyApi = new Spotify({
   clientId: CLIENT_ID,
   clientSecret: CLIENT_SECRET,
   redirectUri: REDIRECT_URI
-});
+})
 
 /** Generates a random string containing numbers and letters of N characters */
-const generateRandomString = N => (Math.random().toString(36)+Array(N).join('0')).slice(2, N+2);
+const generateRandomString = N => (Math.random().toString(36)+Array(N).join('0')).slice(2, N+2)
 
 /**
  * The /login endpoint
@@ -37,10 +39,10 @@ const generateRandomString = N => (Math.random().toString(36)+Array(N).join('0')
  * state in the cookie.
  */
 router.get('/login', (_, res) => {
-  const state = generateRandomString(16);
-  res.cookie(STATE_KEY, state);
-  res.redirect(spotifyApi.createAuthorizeURL(scopes, state));
-});
+  const state = generateRandomString(16)
+  res.cookie(STATE_KEY, state)
+  res.redirect(spotifyApi.createAuthorizeURL(scopes, state))
+})
 
 router.get('/getmusixmatchid', (req,res) => {
   const {title, artist} = req.query
@@ -83,7 +85,8 @@ router.get('/callback', (req, res) => {
 
       // use the access token to access the Spotify Web API
       spotifyApi.getMe().then(({ body }) => {
-        console.log(body);
+        console.log(body)
+        //dbapi.createUser(body.id)
       });
 
       // spotifyApi.getMyTopTracks().then(({ body }) => {

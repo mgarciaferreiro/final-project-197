@@ -1,7 +1,23 @@
 // Connect to the database and import models
 const { user, quote } = require('./dbconnect');
 
-// Todo functions
+function getQuotes(userId) {
+  return quote.findAll()//user.findByPk(userId).getQuotes()
+}
+
+function createUser(userId) {
+  return user.create({ userId: userId }).then(() => {
+    console.log ('user added. users: ' + user.findAll())
+    return user.findAll()
+  })
+}
+
+function addQuote(line, song, artist, userId) {
+  return quote.create({ quote: line, song: song, artist: artist, userId: userId }).then(() => {
+    console.log ('quote added. quote: ' + quote.findAll())
+    return quote.findAll()
+  })
+}
 
 // get all the todos. note that a promise is returned
 function getTodos() {
@@ -22,9 +38,5 @@ function removeTodo(todoId) {
 
 // Export the functions so that they can be used throughout your backend
 module.exports = {
-  todos: {
-    getTodos,
-    addTodo,
-    removeTodo
-  }
+  getQuotes, createUser, addQuote
 };

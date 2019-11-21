@@ -15,9 +15,11 @@ class SongDisplay extends Component {
 
   componentDidMount() {
     // params injected via react-router, dispatch injected via connect
-    const {dispatch} = this.props;
-    dispatch(fetchSongId("Baby"));
-    //dispatch(getNowPlaying());
+    const {dispatch, params} = this.props;
+    const {accessToken, refreshToken} = params;
+    dispatch(setTokens({accessToken, refreshToken}));
+    dispatch(getMyInfo());
+    dispatch(getNowPlaying());
   }
 
   render() {

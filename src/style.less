@@ -34,11 +34,18 @@ a {
     background-color: @accent-color;
     color: #fff;
     padding: 20px 50px;
+    height: 12%;
   }
   .page-content {
     padding: 20px 50px 50px 50px;
     display: flex;
     flex-direction: column;
+    height: 88%;
+    p {
+      margin-right: 20%;
+      margin-left: 20%;
+      margin-top: 10%
+    }
   }
   .login {
     margin-left: auto;
@@ -64,7 +71,7 @@ a {
       align-items: center;
       img {
         width: 200px;
-        height: 200px;
+        height: 150px;
       }
       ul {
         li {
@@ -80,6 +87,40 @@ a {
           }
         }
       }
+    }
+  }
+  .song {
+    div {
+      padding: 10px 0px;
+      font-weight: 300px;
+    }
+    img {
+      width: 200px;
+      height: 200px;
+      margin-left: 30px;
+    }
+    .song-info {
+      display: flex;
+      align-content: center;
+      margin: 20px;
+    }
+    ul {
+      li {
+        display: flex;
+        padding: 3px 0px;
+        span:first-child {
+          width: 150px;
+          text-align: right;
+          margin-right: 20px;
+        }
+      }
+    }
+    button {
+      padding: 10px;
+      width: 200px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      margin-left: 30px;
     }
   }
 }

@@ -12,10 +12,6 @@ import {
  */
 class User extends Component {
 
-  constructor() {
-    super();
-  }
-
   /** When we mount, get the tokens from react-router and initiate loading the info */
   componentDidMount() {
     // params injected via react-router, dispatch injected via connect
@@ -54,16 +50,34 @@ class User extends Component {
             <li><span>Product</span><span>{product}</span></li>
           </ul>
         </div>
+        <div className="song">
         <div>
-          Now Playing: { name + ' by ' + artist }
+          Now Playing: { name? name + ' by ' + artist : 'nothing :(' }
         </div>
-        <div>
-          <img src={albumArt} style={{ height: 150 }}/>
-        </div>
+        <div className="song-info">
         <ul>{lyricsLines}</ul>
+        <div>
+          <img src={albumArt}/>
+          <div>
+          <button onClick={() => saveQuote(name, artist, id)} >Save selected lyrics</button>
+          </div>
+        </div>
+      </div>
+      </div>
       </div>
     );
   }
+}
+
+function saveQuote(song, artist, userId) {
+  var text = "";
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+        if (text != '') {
+          console.log(text)
+          //addQuote(text, song, artist, userId)
+        }
+    }
 }
 
 export default connect(state => state)(User);
