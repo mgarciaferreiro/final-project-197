@@ -60,38 +60,27 @@ export function getNowPlaying() {
 
 export function getSongId(title, artist) {
   return dispatch => {
-    title = title.replace(' ', '_');
-    artist = artist.replace(' ', '_');
-    const url = `
-    https://cors-anywhere.herokuapp.com/http://api.musixmatch.com/ws/1.1/track.search?q_track=${title}?q_artist=${artist}
-    &page_size=10&page=1&s_track_rating=desc&apikey=${MUSIXMATCH_API_KEY}`
-    axios.get(url).then( response => {
+    title = title.replace(' ', '_')
+    artist = artist.replace(' ', '_')
+    
+    axios.get(`/getmusixmatchid?title=${title}&artist=${artist}`)
+    .then(response => {
       console.log(response)
       const track_id = response.data.message.body.track_list[0].track.track_id
       console.log(track_id)
       getLyrics(track_id, dispatch)
-    }
-    )
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }
 }
 
 export function getLyrics(songId, dispatch) {
-  return axios
-    .get(`https://cors-anywhere.herokuapp.com/https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=${songId}
-        &apikey=${MUSIXMATCH_API_KEY}`)
+  return axios.get(`/getmusixmatchlyrics?songId=${songId}`)
     .then (res => {
-        dispatch({ type: LYRICS_RECEIVED, data: res.data.message.body.lyrics });
-        // return axios
-        // .get(
-        //     `https://cors-anywhere.herokuapp.com/https://api.musixmatch.com/ws/1.1/track.get?track_id=
-        //     ${this.props.match.params.id}
-        //     &apikey=${MUSIXMATCH_API_KEY}`)
-        // .then(res => {
-        //     this.setState({
-        //         track: res.data.message.body.track
-        //     })
-        //     //console.log(this.state.track)
-        // })
+        console.log(res)
+        dispatch({ type: LYRICS_RECEIVED, data: res.data.message.body.lyrics.lyrics_body })
     })
     .catch(err => {
         console.log(err)

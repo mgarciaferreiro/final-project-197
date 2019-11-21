@@ -9,7 +9,7 @@ export default class SpotifyLogin extends Component {
     // injected via react router
     const {children} = this.props;
     return (
-      <div className="spotify-login" style={{backgroundImage: "url(/rave.png)"}}>
+      <div className="spotify-login">
         <h1>LYRX</h1>
         <div className="page-content">
           <p>Immediately get the lyrics and artist of any song you're listening to, 

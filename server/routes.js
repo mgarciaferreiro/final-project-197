@@ -6,6 +6,7 @@ const express = require('express');
 const router = new express.Router();
 
 const dotenv = require('dotenv');
+const axios = require('axios')
 
 // get global variables from .env file
 const result = dotenv.config()
@@ -15,10 +16,7 @@ if (result.error) {
   console.log(result.parsed)
 }
 
-// configure the express server
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:3000/callback';
+const {CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, MUSIXMATCH_API_KEY} = process.env
 const STATE_KEY = 'spotify_auth_state';
 // your application requests authorization
 const scopes = ['user-read-private', 'user-read-email', 'user-read-playback-state', 'user-top-read'];
@@ -43,6 +41,22 @@ router.get('/login', (_, res) => {
   res.cookie(STATE_KEY, state);
   res.redirect(spotifyApi.createAuthorizeURL(scopes, state));
 });
+
+router.get('/getmusixmatchid', (req,res) => {
+  const {title, artist} = req.query
+  const url = 'http://api.musixmatch.com/ws/1.1/track.search?q_track=' + title 
+    + '&q_artist=' + artist + '&page_size=10&page=1&s_track_rating=desc&apikey=' + MUSIXMATCH_API_KEY
+  axios.get(url)
+  .then(({data}) => res.json(data))
+})
+
+router.get('/getmusixmatchlyrics', (req,res) => {
+  const {songId} = req.query
+  const url = `https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=${songId}
+  &apikey=${MUSIXMATCH_API_KEY}`
+  axios.get(url)
+  .then(({data}) => res.json(data))
+})
 
 /**
  * The /callback endpoint - hit after the user logs in to spotifyApi

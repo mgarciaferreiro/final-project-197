@@ -3,8 +3,7 @@ import { connect }      from 'react-redux';
 import {
   getMyInfo,
   setTokens,
-  getNowPlaying,
-  fetchSongId
+  getNowPlaying
 }   from '../actions/actions';
 
 /**
@@ -37,6 +36,9 @@ class User extends Component {
     if (loading) {
       return <h2>Loading...</h2>;
     }
+    const lyricsArray = lyrics? lyrics.split("\n") : []
+    const lyricsLines = lyricsArray.map((line) => <li>{line}</li>)
+
     return (
       <div className="user">
         <h2>{`Logged in as ${display_name}`}</h2>
@@ -58,7 +60,7 @@ class User extends Component {
         <div>
           <img src={albumArt} style={{ height: 150 }}/>
         </div>
-        <p>{lyrics}</p>
+        <ul>{lyricsLines}</ul>
       </div>
     );
   }
