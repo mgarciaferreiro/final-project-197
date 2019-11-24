@@ -86,17 +86,7 @@ router.get('/callback', (req, res) => {
       // use the access token to access the Spotify Web API
       spotifyApi.getMe().then(({ body }) => {
         console.log(body)
-        //dbapi.createUser(body.id)
-      });
-
-      // spotifyApi.getMyTopTracks().then(({ body }) => {
-      //   console.log(body);
-      // });
-
-      spotifyApi.getMyCurrentPlaybackState().then(({ body }) => {
-        console.log(body.item);
-      }, (error) => {
-        console.log(error) 
+        dbapi.createUser(body.id).then()
       });
 
       // we can also pass the token to the browser to make requests from there
@@ -105,6 +95,16 @@ router.get('/callback', (req, res) => {
       res.redirect('/#/error/invalid token');
     });
   }
+});
+
+router.get('/quotes', (req, res) => {
+  const {userId} = req.body
+  dbapi.getQuotes(userId).then(quotes => res.json(quotes));
+});
+
+router.post('/createquote', (req, res) => {
+  const {line, song, artist, userId} = req.body
+  dbapi.addQuote(line, song, artist, userId).then(quotes => res.json(quotes));
 });
 
 module.exports = router;

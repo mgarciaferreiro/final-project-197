@@ -1,5 +1,6 @@
 import {
-  SPOTIFY_TOKENS, SPOTIFY_ME_BEGIN, SPOTIFY_ME_SUCCESS, SPOTIFY_ME_FAILURE, SPOTIFY_CURRENT_TRACK, LYRICS_RECEIVED
+  SPOTIFY_TOKENS, SPOTIFY_ME_BEGIN, SPOTIFY_ME_SUCCESS, SPOTIFY_ME_FAILURE, SPOTIFY_CURRENT_TRACK, 
+  LYRICS_RECEIVED, QUOTE_ADDED, QUOTES_RECEIVED
 } from '../actions/actions';
 
 /** The initial state; no tokens and no user info */
@@ -25,7 +26,8 @@ const initialState = {
     artist: null,
     albumArt: null,
     lyrics: null
-  }
+  },
+  quotes: []
 };
 
 /**
@@ -40,22 +42,33 @@ export default function reduce(state = initialState, action) {
   case SPOTIFY_ME_BEGIN:
     return Object.assign({}, state, {
       user: Object.assign({}, state.user, {loading: true})
-  });
+    });
 
   case SPOTIFY_ME_SUCCESS:
     return Object.assign({}, state, {
       user: Object.assign({}, state.user, action.data, {loading: false})
-  });
+    });
 
   case SPOTIFY_CURRENT_TRACK:
     return Object.assign({}, state, {
       currentTrack: Object.assign({}, state.currentTrack, action.data)
-  });
+    });
 
   case LYRICS_RECEIVED:
-      return Object.assign({}, state, {
-        currentTrack: Object.assign({}, state.currentTrack, {lyrics: action.data})
-  });
+    return Object.assign({}, state, {
+      currentTrack: Object.assign({}, state.currentTrack, {lyrics: action.data})
+    });
+
+  case QUOTE_ADDED:
+    return Object.assign({}, state, {
+      currentTrack: Object.assign({}, state.quotes, action.data)
+    });
+
+  case QUOTES_RECEIVED:
+    return Object.assign({}, state, {
+      currentTrack: Object.assign({}, state.quotes, action.data)
+    });
+
 
   // currently no failure state :(
   case SPOTIFY_ME_FAILURE:

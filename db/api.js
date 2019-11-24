@@ -2,21 +2,21 @@
 const { user, quote } = require('./dbconnect');
 
 function getQuotes(userId) {
-  return quote.findAll()//user.findByPk(userId).getQuotes()
+  return user.findByPk(userId).getQuotes()
 }
 
 function createUser(userId) {
   return user.create({ userId: userId }).then(() => {
     console.log ('user added. users: ' + user.findAll())
     return user.findAll()
-  })
+  }, error => console.log(error))
 }
 
 function addQuote(line, song, artist, userId) {
   return quote.create({ quote: line, song: song, artist: artist, userId: userId }).then(() => {
     console.log ('quote added. quote: ' + quote.findAll())
     return quote.findAll()
-  })
+  }, error => console.log(error))
 }
 
 // get all the todos. note that a promise is returned

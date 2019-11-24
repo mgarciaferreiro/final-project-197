@@ -3,7 +3,8 @@ import { connect }      from 'react-redux';
 import {
   getMyInfo,
   setTokens,
-  getNowPlaying
+  getNowPlaying,
+  addQuote
 }   from '../actions/actions';
 
 /**
@@ -24,6 +25,7 @@ class User extends Component {
 
   /** Render the user's info */
   render() {
+    const {dispatch} = this.props;
     const { accessToken, refreshToken, user, currentTrack } = this.props;
     const { loading, display_name, images, id, email, external_urls, href, country, product } = user;
     const { name, artist, albumArt, lyrics } = currentTrack;
@@ -59,7 +61,7 @@ class User extends Component {
         <div>
           <img src={albumArt}/>
           <div>
-          <button onClick={() => saveQuote(name, artist, id)} >Save selected lyrics</button>
+          <button onClick={() => saveQuote(name, artist, id, dispatch)} >Save selected lyrics</button>
           </div>
         </div>
       </div>
@@ -69,13 +71,14 @@ class User extends Component {
   }
 }
 
-function saveQuote(song, artist, userId) {
+function saveQuote(song, artist, userId, dispatch) {
   var text = "";
     if (window.getSelection) {
         text = window.getSelection().toString();
         if (text != '') {
           console.log(text)
-          //addQuote(text, song, artist, userId)
+          console.log(userId)
+          dispatch(addQuote(text, song, artist, userId));
         }
     }
 }
