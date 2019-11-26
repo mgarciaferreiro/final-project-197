@@ -2,33 +2,28 @@
 const { user, quote } = require('./dbconnect');
 
 function getQuotes(userId) {
-  return user.findByPk(userId).getQuotes()
+  return user.findByPk(userId).then(user => {
+    return user.getQuotes()
+    .catch(error => console.log(error))
+  })
 }
 
 function createUser(userId) {
-  return user.create({ userId: userId }).then(() => {
-    console.log ('user added. users: ' + user.findAll())
-    return user.findAll()
-  }, error => console.log(error))
+  return user.create({ userId: userId })
+  .catch(error => console.log(error))
 }
 
 function addQuote(line, song, artist, userId) {
-  return quote.create({ quote: line, song: song, artist: artist, userId: userId }).then(() => {
-    console.log ('quote added. quote: ' + quote.findAll())
-    return quote.findAll()
-  }, error => console.log(error))
-}
+  return user.findByPk(userId)
+  .then(user => {
+    return quote.create({ quote: line, song: song, artist: artist })
+    .then(quote => {
+      console.log({quote})
+      user.addQuote(quote)
+      return quote
+    })
+  }).catch(error => console.log(error))
 
-// get all the todos. note that a promise is returned
-function getTodos() {
-  return todo.findAll();
-}
-
-// add todo and then return all todos. Note that a promise is returned
-function addTodo(todoname) {
-  return todo.create({ taskname: todoname }).then(() => {
-    return todo.findAll();
-  });
 }
 
 // removes a todo by id and then returns all todos

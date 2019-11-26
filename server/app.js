@@ -3,6 +3,7 @@
 const express      = require('express');
 const bodyParser   = require('body-parser');
 const cookieParser = require('cookie-parser');
+const session = require('express-session')
 const path         = require('path');
 const logger       = require('morgan');
 const routes       = require('./routes');
@@ -37,6 +38,12 @@ app.use(logger('dev'))
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: false }))
   .use(express.static(path.resolve(__dirname, '../public')))
+  .use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+  }))
   .use('/', routes);
 
 app.listen(app.get('port'), () => {

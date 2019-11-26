@@ -34,6 +34,7 @@ const initialState = {
  * Reducer
  */
 export default function reduce(state = initialState, action) {
+  console.log(action)
   switch (action.type) {
   case SPOTIFY_TOKENS:
     const {accessToken, refreshToken} = action;
@@ -60,13 +61,14 @@ export default function reduce(state = initialState, action) {
     });
 
   case QUOTE_ADDED:
+    state.quotes.push(action.data)
     return Object.assign({}, state, {
-      currentTrack: Object.assign({}, state.quotes, action.data)
+      quotes: Object.assign({}, state.quotes, state.quotes)
     });
 
   case QUOTES_RECEIVED:
     return Object.assign({}, state, {
-      currentTrack: Object.assign({}, state.quotes, action.data)
+      quotes: Object.assign({}, state.quotes, action.data)
     });
 
 

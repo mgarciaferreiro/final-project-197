@@ -7,4 +7,5 @@ module.exports = {
     primaryKey: true,
     unique: true
   }
+  //usertoken, refrsehn
 };

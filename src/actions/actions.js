@@ -104,7 +104,7 @@ export function addQuote(line, song, artist, userId) {
 export function getQuotes(userId) {
   return dispatch => {
     axios
-      .get('/quotes')
+      .get(`/quotes?userId=${userId}`)
       .then(({ data }) => {
         console.log(data)
         dispatch({ type: QUOTES_RECEIVED, data: data });

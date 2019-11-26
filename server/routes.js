@@ -33,6 +33,17 @@ const spotifyApi = new Spotify({
 /** Generates a random string containing numbers and letters of N characters */
 const generateRandomString = N => (Math.random().toString(36)+Array(N).join('0')).slice(2, N+2)
 
+// const getUserIfLoggedInMW = (req,res,next) => {
+//   if (!req.session.userId) {
+//     res.redirect('/login')
+//   } else {
+//     dbapi.getUser().then(user => {
+//       req.user = user
+//       next()
+//     })
+//   }
+// }
+
 /**
  * The /login endpoint
  * Redirect the client to the spotify authorize url, but first set that user's
@@ -86,7 +97,13 @@ router.get('/callback', (req, res) => {
       // use the access token to access the Spotify Web API
       spotifyApi.getMe().then(({ body }) => {
         console.log(body)
-        dbapi.createUser(body.id).then()
+        req.session.userId = body.id
+        console.log("session userid set " + req.session.userId)
+        dbapi.createUser(body.id)
+          .then(user => {
+            req.session.userId = user.userId
+            console.log("session userid set " + req.session.userId)
+          })
       });
 
       // we can also pass the token to the browser to make requests from there
@@ -98,13 +115,14 @@ router.get('/callback', (req, res) => {
 });
 
 router.get('/quotes', (req, res) => {
-  const {userId} = req.body
+  const {userId} = req.query
   dbapi.getQuotes(userId).then(quotes => res.json(quotes));
 });
 
 router.post('/createquote', (req, res) => {
   const {line, song, artist, userId} = req.body
-  dbapi.addQuote(line, song, artist, userId).then(quotes => res.json(quotes));
+  console.log("session userid " + req.session.userId)
+  dbapi.addQuote(line, song, artist, userId).then(quote => res.json(quote));
 });
 
 module.exports = router;

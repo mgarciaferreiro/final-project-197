@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import { connect }      from 'react-redux';
+import React, { Component } from 'react'
+import { connect }      from 'react-redux'
 import {
   getMyInfo,
   setTokens,
   getNowPlaying,
-  addQuote
-}   from '../actions/actions';
+  addQuote,
+  getQuotes
+}   from '../actions/actions'
 
 /**
  * Our user page
@@ -16,23 +17,25 @@ class User extends Component {
   /** When we mount, get the tokens from react-router and initiate loading the info */
   componentDidMount() {
     // params injected via react-router, dispatch injected via connect
-    const {dispatch, params} = this.props;
-    const {accessToken, refreshToken} = params;
-    dispatch(setTokens({accessToken, refreshToken}));
-    dispatch(getMyInfo());
-    dispatch(getNowPlaying());
+    const {dispatch, params} = this.props
+    const {accessToken, refreshToken} = params
+    dispatch(setTokens({accessToken, refreshToken}))
+    dispatch(getMyInfo())
+    dispatch(getNowPlaying())
+    dispatch(getQuotes('martagarciaferreiro'))
   }
 
   /** Render the user's info */
   render() {
     const {dispatch} = this.props;
-    const { accessToken, refreshToken, user, currentTrack } = this.props;
-    const { loading, display_name, images, id, email, external_urls, href, country, product } = user;
-    const { name, artist, albumArt, lyrics } = currentTrack;
-    const imageUrl = images[0] ? images[0].url : "";
+    const { accessToken, refreshToken, user, currentTrack } = this.props
+    const { loading, display_name, images, id, email, external_urls, href, country, product } = user
+    const { name, artist, albumArt, lyrics } = currentTrack
+    const imageUrl = images[0] ? images[0].url : ""
+
     // if we're still loading, indicate such
     if (loading) {
-      return <h2>Loading...</h2>;
+      return <h2>Loading...</h2>
     }
     const lyricsArray = lyrics? lyrics.split("\n") : []
     const lyricsLines = lyricsArray.map((line) => <li>{line}</li>)
@@ -54,7 +57,9 @@ class User extends Component {
         </div>
         <div className="song">
         <div>
+          <h2>
           Now Playing: { name? name + ' by ' + artist : 'nothing :(' }
+          </h2>
         </div>
         <div className="song-info">
         <ul>{lyricsLines}</ul>
@@ -74,13 +79,29 @@ class User extends Component {
 function saveQuote(song, artist, userId, dispatch) {
   var text = "";
     if (window.getSelection) {
-        text = window.getSelection().toString();
+        text = window.getSelection().toString()
         if (text != '') {
           console.log(text)
           console.log(userId)
-          dispatch(addQuote(text, song, artist, userId));
+          dispatch(addQuote(text, song, artist, userId))
         }
     }
 }
 
-export default connect(state => state)(User);
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     saveQuote: (song, artist, userId) => {
+//       var text = "";
+//     if (window.getSelection) {
+//         text = window.getSelection().toString();
+//         if (text != '') {
+//           console.log(text)
+//           console.log(userId)
+//           dispatch(addQuote(text, song, artist, userId));
+//         }
+//     }
+//     }
+//   }
+// }
+
+export default connect(state => state)(User)
