@@ -1,6 +1,6 @@
 import {
   SPOTIFY_TOKENS, SPOTIFY_ME_BEGIN, SPOTIFY_ME_SUCCESS, SPOTIFY_ME_FAILURE, SPOTIFY_CURRENT_TRACK, 
-  LYRICS_RECEIVED, QUOTE_ADDED, QUOTES_RECEIVED
+  LYRICS_RECEIVED, QUOTE_ADDED, QUOTES_RECEIVED, QUOTE_DELETED, SPOTIFY_TOP_TRACKS
 } from '../actions/actions';
 
 /** The initial state; no tokens and no user info */
@@ -27,7 +27,8 @@ const initialState = {
     albumArt: null,
     lyrics: null
   },
-  quotes: []
+  quotes: [],
+  topTracks: []
 };
 
 /**
@@ -61,15 +62,26 @@ export default function reduce(state = initialState, action) {
     });
 
   case QUOTE_ADDED:
-    state.quotes.push(action.data)
-    return Object.assign({}, state, {
-      quotes: Object.assign({}, state.quotes, state.quotes)
-    });
+    var quotesArr = Object.keys(state.quotes).map( key => state.quotes[key])
+    quotesArr.push(action.data)
+    return Object.assign({}, state, {quotes: quotesArr});
 
   case QUOTES_RECEIVED:
-    return Object.assign({}, state, {
-      quotes: Object.assign({}, state.quotes, action.data)
-    });
+    return Object.assign({}, state, {quotes: action.data});
+  
+  case QUOTE_DELETED:
+      var quotesArr = Object.keys(state.quotes).map( key => state.quotes[key])
+      for (let i = 0; i < quotesArr.length; i++) {
+        if (quotesArr[i].id == action.data) {
+            quotesArr.splice(i, 1)
+        }
+      }
+      console.log(quotesArr)
+      return Object.assign({}, state, {quotes: quotesArr});
+
+  case SPOTIFY_TOP_TRACKS:
+    console.log(action.data)
+    return Object.assign({}, state, {topTracks: action.data});
 
 
   // currently no failure state :(

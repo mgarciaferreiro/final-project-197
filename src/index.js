@@ -11,7 +11,6 @@ import App     from './components/App';
 import Login   from './components/Login';
 import User    from './components/User';
 import Error   from './components/Error';
-import SongDisplay   from './components/SongDisplay';
 
 require('./style.less');
 

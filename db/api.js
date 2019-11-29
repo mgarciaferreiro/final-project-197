@@ -27,11 +27,13 @@ function addQuote(line, song, artist, userId) {
 }
 
 // removes a todo by id and then returns all todos
-function removeTodo(todoId) {
-  return todo.destroy(todoId).then(() => todo.findAll());
+function removeQuote(quoteId) {
+  return quote.destroy({ where: { id: quoteId }}).then(() => {
+    return quoteId
+  }).catch(error => console.log(error))
 }
 
 // Export the functions so that they can be used throughout your backend
 module.exports = {
-  getQuotes, createUser, addQuote
+  getQuotes, createUser, addQuote, removeQuote
 };

@@ -12,32 +12,35 @@ export const SPOTIFY_TOP_TRACKS = 'SPOTIFY_TOP_TRACKS';
 export const LYRICS_RECEIVED = 'LYRICS_RECEIVED';
 export const QUOTE_ADDED = 'QUOTE_ADDED';
 export const QUOTES_RECEIVED = 'QUOTES_RECEIVED';
+export const QUOTE_DELETED = 'QUOTE_DELETED';
 
 /** set the app's access and refresh tokens */
 export function setTokens({accessToken, refreshToken}) {
   if (accessToken) {
-    spotifyApi.setAccessToken(accessToken);
+    spotifyApi.setAccessToken(accessToken)
   }
-  return { type: SPOTIFY_TOKENS, accessToken, refreshToken };
+  return { type: SPOTIFY_TOKENS, accessToken, refreshToken }
 }
 
 /* get the user's info from the /me api */
 export function getMyInfo() {
   return dispatch => {
-    dispatch({ type: SPOTIFY_ME_BEGIN});
+    dispatch({ type: SPOTIFY_ME_BEGIN})
     spotifyApi.getMe().then(data => {
-      dispatch({ type: SPOTIFY_ME_SUCCESS, data: data });
+      dispatch({ type: SPOTIFY_ME_SUCCESS, data: data })
     }).catch(e => {
-      dispatch({ type: SPOTIFY_ME_FAILURE, error: e });
+      dispatch({ type: SPOTIFY_ME_FAILURE, error: e })
     });
   };
 }
 
 export function getTopSongs() {
-  spotifyApi.getMyTopTracks().then(data => {
-    console.log(body);
-    dispatch({ type: SPOTIFY_TOP_TRACKS, data: data });
-  });
+  return dispatch => {
+    spotifyApi.getMyTopTracks().then(data => {
+      console.log(data)
+      dispatch({ type: SPOTIFY_TOP_TRACKS, data: data.items })
+    }).catch(e => console.log(e))
+  }
 }
 
 export function getNowPlaying() {
@@ -106,8 +109,21 @@ export function getQuotes(userId) {
     axios
       .get(`/quotes?userId=${userId}`)
       .then(({ data }) => {
-        console.log(data)
+        //console.log(data)
         dispatch({ type: QUOTES_RECEIVED, data: data });
+      })
+      .catch(error => {
+        console.log(error)
+      });
+  };
+};
+
+export function deleteQuote(quoteId) {
+  return dispatch => {
+    axios
+      .post('/deletequote', { quoteId })
+      .then(({ data }) => {
+        dispatch({ type: QUOTE_DELETED, data: data });
       })
       .catch(error => {
         console.log(error)

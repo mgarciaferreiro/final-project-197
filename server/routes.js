@@ -101,9 +101,9 @@ router.get('/callback', (req, res) => {
         console.log("session userid set " + req.session.userId)
         dbapi.createUser(body.id)
           .then(user => {
-            req.session.userId = user.userId
+            req.session.userId = body.id
             console.log("session userid set " + req.session.userId)
-          })
+          }).catch(error => console.log(error))
       });
 
       // we can also pass the token to the browser to make requests from there
@@ -121,8 +121,12 @@ router.get('/quotes', (req, res) => {
 
 router.post('/createquote', (req, res) => {
   const {line, song, artist, userId} = req.body
-  console.log("session userid " + req.session.userId)
   dbapi.addQuote(line, song, artist, userId).then(quote => res.json(quote));
+});
+
+router.post('/deletequote', (req, res) => {
+  const {quoteId} = req.body
+  dbapi.removeQuote(quoteId).then( quoteId => res.json(quoteId));
 });
 
 module.exports = router;

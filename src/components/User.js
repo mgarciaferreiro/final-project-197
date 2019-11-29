@@ -5,8 +5,10 @@ import {
   setTokens,
   getNowPlaying,
   addQuote,
-  getQuotes
+  getQuotes,
+  getTopSongs
 }   from '../actions/actions'
+import Quote from './Quote'
 
 /**
  * Our user page
@@ -23,22 +25,32 @@ class User extends Component {
     dispatch(getMyInfo())
     dispatch(getNowPlaying())
     dispatch(getQuotes('martagarciaferreiro'))
+    dispatch(getTopSongs())
   }
 
   /** Render the user's info */
   render() {
     const {dispatch} = this.props;
-    const { accessToken, refreshToken, user, currentTrack } = this.props
+    const { accessToken, refreshToken, user, currentTrack, quotes, topTracks } = this.props
     const { loading, display_name, images, id, email, external_urls, href, country, product } = user
     const { name, artist, albumArt, lyrics } = currentTrack
     const imageUrl = images[0] ? images[0].url : ""
 
     // if we're still loading, indicate such
+    console.log(user)
     if (loading) {
       return <h2>Loading...</h2>
     }
     const lyricsArray = lyrics? lyrics.split("\n") : []
     const lyricsLines = lyricsArray.map((line) => <li>{line}</li>)
+
+    const quotesArr = Object.keys(quotes).map( key => quotes[key])
+    console.log(quotesArr)
+    const quotesLis = quotesArr.map(quote => <Quote quote={quote} />)
+
+    const songsArr = Object.keys(topTracks).map( key => topTracks[key])
+    console.log(songsArr)
+    const songsLis = songsArr.map(song => <p>{song.name}</p>)
 
     return (
       <div className="user">
@@ -71,6 +83,17 @@ class User extends Component {
         </div>
       </div>
       </div>
+
+      <div className="quotes">
+      <h2>My Saved Quotes</h2>
+      <ul>{quotesLis}</ul>
+      </div>
+
+      <div className="topSongs">
+      <h2>My Top Spotify Songs</h2>
+      <ul>{songsLis}</ul>
+      </div>
+
       </div>
     );
   }
@@ -81,27 +104,9 @@ function saveQuote(song, artist, userId, dispatch) {
     if (window.getSelection) {
         text = window.getSelection().toString()
         if (text != '') {
-          console.log(text)
-          console.log(userId)
           dispatch(addQuote(text, song, artist, userId))
         }
     }
 }
-
-// const mapDispatchToProps = dispatch => {
-//   return {
-//     saveQuote: (song, artist, userId) => {
-//       var text = "";
-//     if (window.getSelection) {
-//         text = window.getSelection().toString();
-//         if (text != '') {
-//           console.log(text)
-//           console.log(userId)
-//           dispatch(addQuote(text, song, artist, userId));
-//         }
-//     }
-//     }
-//   }
-// }
 
 export default connect(state => state)(User)
