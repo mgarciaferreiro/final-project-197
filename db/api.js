@@ -18,7 +18,6 @@ function addQuote(line, song, artist, userId) {
   .then(user => {
     return quote.create({ quote: line, song: song, artist: artist })
     .then(quote => {
-      console.log({quote})
       user.addQuote(quote)
       return quote
     })

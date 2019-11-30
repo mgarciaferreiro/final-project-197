@@ -96,13 +96,10 @@ router.get('/callback', (req, res) => {
 
       // use the access token to access the Spotify Web API
       spotifyApi.getMe().then(({ body }) => {
-        console.log(body)
         req.session.userId = body.id
-        console.log("session userid set " + req.session.userId)
         dbapi.createUser(body.id)
           .then(user => {
             req.session.userId = body.id
-            console.log("session userid set " + req.session.userId)
           }).catch(error => console.log(error))
       });
 

@@ -18,7 +18,6 @@ const app = express();
 
 // if we're developing, use webpack middleware for module hot reloading
 if (process.env.NODE_ENV !== 'production') {
-  console.log('==> 🌎 using webpack');
 
   // load and configure webpack
   const webpack = require('webpack');

@@ -38,7 +38,6 @@ export function getMyInfo() {
 export function getTopSongs() {
   return dispatch => {
     spotifyApi.getMyTopTracks({limit: 50, time_range: 'long_term'}).then(data => {
-      console.log(data)
       dispatch({ type: SPOTIFY_TOP_TRACKS, data: data.items })
       let explicitPercentage = 0
       let instrumentalPercentage = 0
@@ -49,7 +48,6 @@ export function getTopSongs() {
         axios.get(`/getmusixmatchid?title=${title}&artist=${artist}`)
         .then(response => {
           const track = response.data.message.body.track_list[0].track
-          console.log(track)
           const instrumental = track.instrumental
           const genre = track.primary_genres.music_genre_list[0].music_genre.music_genre_name
           const explicit = track.explicit
@@ -104,7 +102,6 @@ export function getSongId(title, artist, shouldGetLyrics) {
 export function getLyrics(songId, dispatch) {
   return axios.get(`/getmusixmatchlyrics?songId=${songId}`)
     .then (res => {
-        console.log(res)
         dispatch({ type: LYRICS_RECEIVED, data: res.data.message.body.lyrics.lyrics_body })
     })
     .catch(err => {
@@ -117,7 +114,6 @@ export function addQuote(line, song, artist, userId) {
     axios
       .post('/createquote', { line, song, artist, userId })
       .then(({ data }) => {
-        console.log(data)
         dispatch({ type: QUOTE_ADDED, data: data });
       })
       .catch(error => {
@@ -131,7 +127,6 @@ export function getQuotes(userId) {
     axios
       .get(`/quotes?userId=${userId}`)
       .then(({ data }) => {
-        //console.log(data)
         dispatch({ type: QUOTES_RECEIVED, data: data });
       })
       .catch(error => {

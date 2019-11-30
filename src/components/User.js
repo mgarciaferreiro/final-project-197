@@ -39,7 +39,6 @@ class User extends Component {
     const imageUrl = images[0] ? images[0].url : ""
 
     // if we're still loading, indicate such
-    console.log(user)
     if (loading) {
       return <h2>Loading...</h2>
     }
