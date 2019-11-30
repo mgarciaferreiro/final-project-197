@@ -13,6 +13,7 @@ export const LYRICS_RECEIVED = 'LYRICS_RECEIVED';
 export const QUOTE_ADDED = 'QUOTE_ADDED';
 export const QUOTES_RECEIVED = 'QUOTES_RECEIVED';
 export const QUOTE_DELETED = 'QUOTE_DELETED';
+export const STATS_COMPUTED = 'STATS_COMPUTED';
 
 /** set the app's access and refresh tokens */
 export function setTokens({accessToken, refreshToken}) {
@@ -36,9 +37,32 @@ export function getMyInfo() {
 
 export function getTopSongs() {
   return dispatch => {
-    spotifyApi.getMyTopTracks().then(data => {
+    spotifyApi.getMyTopTracks({limit: 50, time_range: 'long_term'}).then(data => {
       console.log(data)
       dispatch({ type: SPOTIFY_TOP_TRACKS, data: data.items })
+      let explicitPercentage = 0
+      let instrumentalPercentage = 0
+      let genres = {}
+      for (let i = 0; i < data.items.length; i++) {
+        const title = data.items[i].name.replace(' ', '_')
+        const artist = data.items[i].artists[0].name.replace(' ', '_')
+        axios.get(`/getmusixmatchid?title=${title}&artist=${artist}`)
+        .then(response => {
+          const track = response.data.message.body.track_list[0].track
+          console.log(track)
+          const instrumental = track.instrumental
+          const genre = track.primary_genres.music_genre_list[0].music_genre.music_genre_name
+          const explicit = track.explicit
+          if (explicit != 0) explicitPercentage += 2
+          if (instrumental != 0) instrumentalPercentage += 2
+          genres[genre] = genres[genre]? genres[genre] += 2 : 2
+          if (i == data.items.length - 1) {
+            dispatch({ type: STATS_COMPUTED, data: {genres, explicitPercentage, instrumentalPercentage} })
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+      }
     }).catch(e => console.log(e))
   }
 }
@@ -48,7 +72,6 @@ export function getNowPlaying() {
     spotifyApi.getMyCurrentPlaybackState().then(response => {
       const name = response.item.name
       const artist = response.item.artists[0].name
-      console.log("now playing: " + name)
       dispatch({ type: SPOTIFY_CURRENT_TRACK, data: { 
                 name: name,
                 artist: artist,
@@ -61,16 +84,15 @@ export function getNowPlaying() {
   };
 }
 
-export function getSongId(title, artist) {
+export function getSongId(title, artist, shouldGetLyrics) {
   return dispatch => {
     title = title.replace(' ', '_')
     artist = artist.replace(' ', '_')
     
     axios.get(`/getmusixmatchid?title=${title}&artist=${artist}`)
     .then(response => {
-      console.log(response)
-      const track_id = response.data.message.body.track_list[0].track.track_id
-      console.log(track_id)
+      const track = response.data.message.body.track_list[0].track
+      const track_id = track.track_id
       getLyrics(track_id, dispatch)
     })
     .catch(err => {

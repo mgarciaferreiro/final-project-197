@@ -9,6 +9,7 @@ import {
   getTopSongs
 }   from '../actions/actions'
 import Quote from './Quote'
+import Song from './Song'
 
 /**
  * Our user page
@@ -31,7 +32,8 @@ class User extends Component {
   /** Render the user's info */
   render() {
     const {dispatch} = this.props;
-    const { accessToken, refreshToken, user, currentTrack, quotes, topTracks } = this.props
+    const { accessToken, refreshToken, user, currentTrack, quotes, topTracks, genres, 
+      explicitPercentage, instrumentalPercentage } = this.props
     const { loading, display_name, images, id, email, external_urls, href, country, product } = user
     const { name, artist, albumArt, lyrics } = currentTrack
     const imageUrl = images[0] ? images[0].url : ""
@@ -45,12 +47,15 @@ class User extends Component {
     const lyricsLines = lyricsArray.map((line) => <li>{line}</li>)
 
     const quotesArr = Object.keys(quotes).map( key => quotes[key])
-    console.log(quotesArr)
     const quotesLis = quotesArr.map(quote => <Quote quote={quote} />)
 
     const songsArr = Object.keys(topTracks).map( key => topTracks[key])
-    console.log(songsArr)
-    const songsLis = songsArr.map(song => <p>{song.name}</p>)
+    const songsLis = songsArr.map(song => <Song song={song} />)
+
+    const genresArr = Object.keys(genres).map( key => [key, genres[key]])
+    // sort in descending order
+    genresArr.sort((a, b) => b[1] - a[1])
+    const genresLis = genresArr.map(item => <h6>{item[0]}: {item[1]}%</h6>)
 
     return (
       <div className="user">
@@ -91,6 +96,12 @@ class User extends Component {
 
       <div className="topSongs">
       <h2>My Top Spotify Songs</h2>
+      <h4 style={{fontWeight: 'bold', paddingBottom: 10}}>My Stats</h4>
+      <h5 style={{fontWeight: 'bold', paddingBottom: 5}}>Percentage of Explicit Songs: {explicitPercentage}%</h5>
+      <h5 style={{fontWeight: 'bold', paddingBottom: 5}}>Percentage of Instrumental Songs: {instrumentalPercentage}%</h5>
+      <h5 style={{fontWeight: 'bold', paddingBottom: 5}}>Genres:</h5>
+      <ul>{genresLis}</ul>
+      <h4 style={{fontWeight: 'bold', paddingTop: 10}}>My Songs</h4>
       <ul>{songsLis}</ul>
       </div>
 

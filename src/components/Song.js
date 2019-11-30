@@ -1,11 +1,15 @@
 import React from 'react';
 
-class Song extends React.Component {
+export default class Song extends React.Component {
   render() {
     return (
-      <div>
-        <p style={{fontWeight: 'bold'}}>"{this.props.quote.quote}"</p>
-        <p>{this.props.quote.song}, {this.props.quote.artist}</p>
+      <div className='song'>
+        <img src={this.props.song.album.images[0].url}></img>
+        <div>
+          <h5 style={{fontWeight: 'bold'}}>{this.props.song.name}</h5>
+          <h5>{this.props.song.artists[0].name}</h5>
+          <h5>{this.props.song.explicit? 'Explicit' : 'Not Explicit'}</h5>
+        </div>
       </div>
     );
   }

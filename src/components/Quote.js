@@ -6,12 +6,14 @@ import { deleteQuote } from '../actions/actions';
 class Quote extends React.Component {
   render() {
     return (
-      <div>
-        <p style={{fontWeight: 'bold'}}>"{this.props.quote.quote}"</p>
-        <p>{this.props.quote.song}, {this.props.quote.artist}</p>
+      <div className='quote'>
         <button onClick={() => this.props.deleteItem(this.props.quote.id)}>
           X
         </button>
+        <div>
+          <h5 style={{fontWeight: 'bold'}}>"{this.props.quote.quote}"</h5>
+          <h5>{this.props.quote.song}, {this.props.quote.artist}</h5>
+        </div>
       </div>
     );
   }

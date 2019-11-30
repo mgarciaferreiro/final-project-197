@@ -1,9 +1,8 @@
 import {
   SPOTIFY_TOKENS, SPOTIFY_ME_BEGIN, SPOTIFY_ME_SUCCESS, SPOTIFY_ME_FAILURE, SPOTIFY_CURRENT_TRACK, 
-  LYRICS_RECEIVED, QUOTE_ADDED, QUOTES_RECEIVED, QUOTE_DELETED, SPOTIFY_TOP_TRACKS
+  LYRICS_RECEIVED, QUOTE_ADDED, QUOTES_RECEIVED, QUOTE_DELETED, SPOTIFY_TOP_TRACKS, STATS_COMPUTED
 } from '../actions/actions';
 
-/** The initial state; no tokens and no user info */
 const initialState = {
   accessToken: null,
   refreshToken: null,
@@ -28,7 +27,10 @@ const initialState = {
     lyrics: null
   },
   quotes: [],
-  topTracks: []
+  topTracks: [],
+  genres: {},
+  explicitPercentage: null,
+  instrumentalPercentage: null
 };
 
 /**
@@ -76,15 +78,15 @@ export default function reduce(state = initialState, action) {
             quotesArr.splice(i, 1)
         }
       }
-      console.log(quotesArr)
       return Object.assign({}, state, {quotes: quotesArr});
 
   case SPOTIFY_TOP_TRACKS:
-    console.log(action.data)
     return Object.assign({}, state, {topTracks: action.data});
 
+  case STATS_COMPUTED:
+    return Object.assign({}, state, {genres: action.data.genres, explicitPercentage: 
+      action.data.explicitPercentage, instrumentalPercentage: action.data.instrumentalPercentage});
 
-  // currently no failure state :(
   case SPOTIFY_ME_FAILURE:
     return state;
 
