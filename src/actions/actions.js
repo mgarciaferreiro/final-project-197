@@ -29,6 +29,7 @@ export function getMyInfo() {
     dispatch({ type: SPOTIFY_ME_BEGIN})
     spotifyApi.getMe().then(data => {
       dispatch({ type: SPOTIFY_ME_SUCCESS, data: data })
+      dispatch(getQuotes(data.id))
     }).catch(e => {
       dispatch({ type: SPOTIFY_ME_FAILURE, error: e })
     });
@@ -82,7 +83,7 @@ export function getNowPlaying() {
   };
 }
 
-export function getSongId(title, artist, shouldGetLyrics) {
+export function getSongId(title, artist) {
   return dispatch => {
     title = title.replace(' ', '_')
     artist = artist.replace(' ', '_')
@@ -102,10 +103,10 @@ export function getSongId(title, artist, shouldGetLyrics) {
 export function getLyrics(songId, dispatch) {
   return axios.get(`/getmusixmatchlyrics?songId=${songId}`)
     .then (res => {
-        dispatch({ type: LYRICS_RECEIVED, data: res.data.message.body.lyrics.lyrics_body })
+      dispatch({ type: LYRICS_RECEIVED, data: res.data.message.body.lyrics.lyrics_body })
     })
     .catch(err => {
-        console.log(err)
+      console.log(err)
     })
 }
 

@@ -25,13 +25,12 @@ class User extends Component {
     dispatch(setTokens({accessToken, refreshToken}))
     dispatch(getMyInfo())
     dispatch(getNowPlaying())
-    dispatch(getQuotes('martagarciaferreiro'))
     dispatch(getTopSongs())
   }
 
   /** Render the user's info */
   render() {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props
     const { accessToken, refreshToken, user, currentTrack, quotes, topTracks, genres, 
       explicitPercentage, instrumentalPercentage } = this.props
     const { loading, display_name, images, id, email, external_urls, href, country, product } = user
